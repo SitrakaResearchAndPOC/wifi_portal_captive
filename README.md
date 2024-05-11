@@ -77,12 +77,20 @@ docker exec -ti wifieviltwin bash create_ap/create_ap wlx001c50b41782 wlp3s0 MyA
 ```  
 docker ps
 ```  
-```  
-for having <id>
+For having <id>
 ```  
 docker commit id wifieviltwin
 ```  
 ```  
-docker save wifieviltwin - wifieviltwin.tar.gz
+docker save wifieviltwin -o wifieviltwin.tar.gz
 ```  
 # LOAD AND RUN
+```  
+docker load -i  wifieviltwin.tar.gz
+```  
+```  
+docker run -tid --privileged -v /dev/bus/usb:/dev/bus/usb -v /tmp/.X11-unix:/tmp/.X11-unix:ro -v $XAUTHORITY:/home/user/.Xauthority:ro --net=host --env="DISPLAY=$DISPLAY" --env="LC_ALL=C.UTF-8" --env="LANG=C.UTF-8" --name wifieviltwin ubuntu:20.04
+```  
+```  
+docker exec -ti wifieviltwin bash create_ap/create_ap wlx001c50b41782 wlp3s0 MyAccessPoint
+```
