@@ -1,0 +1,75 @@
+ sudo su
+ apt update
+ apt install net-tools
+ apt install wireshark
+ apt install tcpdump 
+ apt install bridge-utils
+ apt install hostapd dnsmasq
+  
+ for my connexion internet : wlp3s0
+ for sharing internet : wlx001c50b41782
+ 
+ 
+ cp /media/wifi/HDD3/RINO_TP/archive\ tp/Captive_portal_conf/dnsmasq.conf ../wifi/
+ cp /media/wifi/HDD3/RINO_TP/archive\ tp/Captive_portal_conf/hostapd.conf ../wifi/
+
+
+ls
+
+nano dnsmasq.conf
+
+interface=wlx001c50b41782
+dhcp-range=192.168.1.2,192.168.1.250,255.255.255.0,12h
+dhcp-option=3,192.168.1.1
+dhcp-option=6,192.168.1.1
+server=8.8.8.8
+server=8.8.4.4
+log-queries
+log-dhcp
+port=5353
+
+
+
+nano hostapd.conf
+
+interface=wlx001c50b41782
+bridge=br0
+ssid=EvilTwin      
+channel=6
+hw_mode=g
+driver=nl80211
+
+For wlan sharing :
+echo 1|sudo tee /proc/sys/net/ipv4/ip_forward
+iptables -t nat -A POSTROUTING -o wlp3s0 -j MASQUERADE
+iptables -A FORWARD -i wlp3s0 -o wlx001c50b41782 -m state --state RELATED,ESTABLISHED -j ACCEPT
+iptables -A FORWARD -i wlx001c50b41782 -o wlp3s0 -j ACCEPT
+iptables-save > /etc/iptables.rules
+
+
+For ethernet sharing
+brctl addbr br0
+brctl addif br0 wlp3s0
+brctl show 
+ifconfig br0 up
+ifconfig br0
+
+ip addr add  192.168.1.1/24 dev wlx001c50b41782
+or
+ifconfig wlx001c50b41782 192.168.1.1 255.255.255.0
+
+
+
+apt install make git
+git clone https://github.com/oblique/create_ap
+cd create_ap/
+make install
+
+
+
+create_ap wlx001c50b41782 wlp3s0 MyAccessPoint
+
+
+
+
+
